@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="A personal surprise for Misis Normy — open this page to see it.">
+
+<meta name="robots" content="index,follow">
+
+<meta property="og:title" content="For Misis Normy">
+
+<meta property="og:description" content="Your surprise is waiting — tap to open.">
+
+<meta property="og:type" content="website">
+
+<title>For Misis Normy</title>
+
+
+
+<style>
+
+body {
+
+    margin: 0;
+
+    font-family: 'Segoe UI', sans-serif;
+
+    background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+
+    text-align: center;
+
+    color: white;
+
+    overflow-x: hidden;
+
+}
+
+
+
+.container {
+
+    padding: 30px 20px;
+
+}
+
+
+
+h1 {
+
+    font-size: 26px;
+
+}
+
+
+
+.message {
+
+    font-size: 15px;
+
+    margin-top: 15px;
+
+    line-height: 1.6;
+
+}
+
+
+
+button {
+
+    margin-top: 20px;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: white;
+
+    color: #ff6f91;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+}
+
+
+
+.gallery-wrapper {
+
+    display: none;
+
+    margin-top: 30px;
+
+    opacity: 0;
+
+    transform: translateY(20px);
+
+    transition: all 0.6s ease;
+
+}
+
+
+
+.gallery-wrapper.show {
+
+    display: block;
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+
+
+.gallery {
+
+    display: flex;
+
+    overflow-x: auto;
+
+    scroll-snap-type: x mandatory;
+
+    gap: 15px;
+
+    padding: 10px;
+
+}
+
+
+
+.gallery img {
+
+    flex: 0 0 85%;
+
+    max-width: 300px;
+
+    border-radius: 15px;
+
+    scroll-snap-align: center;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+}
+
+
+
+.footer {
+
+    margin-top: 15px;
+
+    font-size: 14px;
+
+}
+
+
+
+.manifest-hint {
+
+    margin-top: 14px;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+
+    opacity: 0.95;
+
+    max-width: 360px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="container">
+
+    <h1>Hi Misis Normy Alzaga Bonaobra</h1>
+
+
+
+    <div class="message">
+
+        My love, Normy Alzaga…<br><br>
+
+
+
+        I just want you to know how much you truly mean to me.  
+
+        You are not just someone I love — you are my peace, my comfort, and my happiness. 💕<br><br>
+
+
+
+        Every moment with you feels special, and every memory we create becomes something I treasure deeply.  
+
+        I’m so lucky to have you in my life, my Misis Normy Alzaga Bonaobra. 💖<br><br>
+
+
+
+        No matter what happens, I’ll always choose you. Always. ❤️
+
+    </div>
+
+
+
+    <button onclick="openSurprise()">Open Your Surprise 🎁</button><br>
+
+    <button onclick="playMusic()">Play Our Song 🎵</button>
+
+
+
+    <p id="manifestHint" class="manifest-hint" hidden></p>
+
+
+
+    <audio id="bgMusic" loop></audio>
+
+
+
+    <div class="gallery-wrapper" id="galleryWrapper">
+
+        <h2>Our Memories 📸</h2>
+
+
+
+        <div class="gallery" id="photoGallery"></div>
+
+
+
+        <div class="footer">
+
+            I love you always, my Misis ❤️
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script src="manifest.js?v=3"></script>
+
+<script>
+
+/* Tried after manifest song so the track still works if manifest.js was never refreshed */
+
+var FALLBACK_AUDIO = [
+
+    "14.mp4",
+
+    "14.mp3",
+
+    "14.m4a",
+
+    "14.wav",
+
+    "Silent Sanctuary - 14.mp3",
+
+    "Silent Sanctuary - 14.m4a",
+
+    "Silent Sanctuary - 14.wav"
+
+];
+
+
+
+/* If manifest.js on GitHub is empty/old, these names still work — change here if you rename files. */
+var DEFAULT_MEDIA = {
+    song: "14.mp4",
+    photos: ["normy.jpg", "Rowen.jpg", "Both.jpg"]
+};
+
+function manifest() {
+    var raw = window.MEDIA_MANIFEST || {};
+    var song =
+        raw.song && String(raw.song).trim()
+            ? String(raw.song).trim()
+            : DEFAULT_MEDIA.song;
+    var photos =
+        raw.photos && raw.photos.length ? raw.photos : DEFAULT_MEDIA.photos;
+    return { song: song, photos: photos.slice() };
+}
+
+
+
+function audioMime(path) {
+
+    const ext = (path.split(".").pop() || "").toLowerCase();
+
+    if (ext === "mp4" || ext === "m4a") return "audio/mp4";
+
+    if (ext === "ogg") return "audio/ogg";
+
+    if (ext === "wav") return "audio/wav";
+
+    return "audio/mpeg";
+
+}
+
+
+
+function uniquePaths(paths) {
+
+    const seen = {};
+
+    const out = [];
+
+    paths.forEach(function (p) {
+
+        if (!p || seen[p]) return;
+
+        seen[p] = true;
+
+        out.push(p);
+
+    });
+
+    return out;
+
+}
+
+
+
+function applyManifest() {
+
+    const m = manifest();
+
+    const audio = document.getElementById("bgMusic");
+
+    audio.innerHTML = "";
+
+    const paths = uniquePaths([m.song].concat(FALLBACK_AUDIO));
+
+    paths.forEach(function (path) {
+
+        const src = document.createElement("source");
+
+        src.src = path;
+
+        src.type = audioMime(path);
+
+        audio.appendChild(src);
+
+    });
+
+    if (paths.length) {
+
+        audio.load();
+
+    }
+
+}
+
+
+
+function updateManifestHint() {
+
+    const hint = document.getElementById("manifestHint");
+
+    if (!hint) return;
+
+    /* Don’t show “run .cmd” setup text on the public GitHub Pages link — only when testing locally. */
+    var onGithubPages = /\.github\.io$/i.test(location.hostname);
+    var debugHints = /(?:^|[?&])debug=1(?:&|$)/.test(location.search);
+    if (onGithubPages && !debugHints) {
+        hint.hidden = true;
+        hint.textContent = "";
+        return;
+    }
+
+    const m = manifest();
+
+    const noPhotos = !(m.photos && m.photos.length);
+
+    const lines = [];
+
+    if (noPhotos) {
+
+        lines.push(
+
+            "No photos listed yet. Double-click Refresh-manifest.cmd in this folder, then upload the new manifest.js to GitHub. Or edit manifest.js on GitHub (set \"photos\" to your image filenames)."
+
+        );
+
+    }
+
+    if (!m.song) {
+
+        lines.push(
+
+            "No song in manifest.js yet (page still tries filename fallbacks). Run Refresh-manifest.cmd, or edit manifest.js on GitHub and set \"song\" to your audio filename (e.g. 14.mp4)."
+
+        );
+
+    }
+
+    if (lines.length) {
+
+        hint.hidden = false;
+
+        hint.textContent = lines.join(" ");
+
+    } else {
+
+        hint.hidden = true;
+
+    }
+
+}
+
+
+
+function shuffleInPlace(arr) {
+
+    for (let i = arr.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+
+    }
+
+    return arr;
+
+}
+
+
+
+function buildGallery() {
+
+    const wrap = document.getElementById("photoGallery");
+
+    wrap.innerHTML = "";
+
+    const photos = manifest().photos || [];
+
+    const order = shuffleInPlace([...photos]);
+
+    order.forEach(function (src) {
+
+        const img = document.createElement("img");
+
+        img.src = src;
+
+        img.alt = "Our memory";
+
+        wrap.appendChild(img);
+
+    });
+
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    applyManifest();
+
+    updateManifestHint();
+
+});
+
+
+
+function openSurprise() {
+
+    buildGallery();
+
+    const gallery = document.getElementById("galleryWrapper");
+
+    gallery.style.display = "block";
+
+
+
+    setTimeout(() => {
+
+        gallery.classList.add("show");
+
+    }, 50);
+
+}
+
+
+
+function playMusic() {
+
+    const music = document.getElementById("bgMusic");
+
+    music.play().catch(function () {
+
+        alert(
+
+            "Could not play audio. Put the song next to this page (same folder), e.g. 14.mp4, or run Refresh-manifest.cmd and refresh."
+
+        );
+
+    });
+
+}
+
+</script>
+
+
+
+</body>
+
+</html>
+
