@@ -264,6 +264,14 @@ button {
 
 var FALLBACK_AUDIO = [
 
+    "14.mp4",
+
+    "14.mp3",
+
+    "14.m4a",
+
+    "14.wav",
+
     "Silent Sanctuary - 14.mp3",
 
     "Silent Sanctuary - 14.m4a",
@@ -286,7 +294,7 @@ function audioMime(path) {
 
     const ext = (path.split(".").pop() || "").toLowerCase();
 
-    if (ext === "m4a") return "audio/mp4";
+    if (ext === "mp4" || ext === "m4a") return "audio/mp4";
 
     if (ext === "ogg") return "audio/ogg";
 
@@ -358,6 +366,15 @@ function updateManifestHint() {
 
     if (!hint) return;
 
+    /* Don’t show “run .cmd” setup text on the public GitHub Pages link — only when testing locally. */
+    var onGithubPages = /\.github\.io$/i.test(location.hostname);
+    var debugHints = /(?:^|[?&])debug=1(?:&|$)/.test(location.search);
+    if (onGithubPages && !debugHints) {
+        hint.hidden = true;
+        hint.textContent = "";
+        return;
+    }
+
     const m = manifest();
 
     const noPhotos = !(m.photos && m.photos.length);
@@ -368,7 +385,7 @@ function updateManifestHint() {
 
         lines.push(
 
-            "No photos listed yet. Double-click Refresh-manifest.cmd in this folder, then refresh this page."
+            "No photos listed yet. Double-click Refresh-manifest.cmd in this folder, then upload the new manifest.js to GitHub. Or edit manifest.js on GitHub (set \"photos\" to your image filenames)."
 
         );
 
@@ -378,7 +395,7 @@ function updateManifestHint() {
 
         lines.push(
 
-            "manifest.js has no song entry (using file-name fallbacks). Run Refresh-manifest.cmd after adding your track."
+            "No song in manifest.js yet (page still tries filename fallbacks). Run Refresh-manifest.cmd, or edit manifest.js on GitHub and set \"song\" to your audio filename (e.g. 14.mp4)."
 
         );
 
@@ -480,7 +497,7 @@ function playMusic() {
 
         alert(
 
-            "Could not play audio. Put the song next to this page (same folder), name it like Silent Sanctuary - 14.mp3, or run Refresh-manifest.cmd and refresh."
+            "Could not play audio. Put the song next to this page (same folder), e.g. 14.mp4, or run Refresh-manifest.cmd and refresh."
 
         );
 
